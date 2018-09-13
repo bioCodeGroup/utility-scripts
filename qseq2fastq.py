@@ -24,7 +24,7 @@ f = open("sampleqseq2.txt","r")
 lib = {}
 sep = ":"
 for line in f:
-    a = line.split('|')
+    a = line.split()
     headers = "@" + sep.join(a[0:8])
     seq = a[8]
     qual = a[9]
