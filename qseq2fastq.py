@@ -35,7 +35,20 @@ for line in f:
     #print (filtering)
 ## add function to filter out bad entries
 ##
-
+def qseq_to_fastq (input_file, output_file):
+    try:
+        input = open(input_file)
+    except:
+        return 'Unable to open input file'
+    output = open(output_file, 'w')
+    qseq_list = []      #list into which the qseq file will be read, and from which the fastq file will be built
+    for line in input:  #loop that populates qseq_list
+        fields = line.split()
+        if len(fields) != 11:   #excludes entries that aren't in qseq format from the output without stopping the whole program
+            continue
+        if fields[10] == '0':   #excludes sequences that didn't meet quality standards
+            continue
+        qseq_list = qseq_list + [fields]
 
 def main():
     """
