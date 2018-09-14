@@ -19,18 +19,24 @@ def get_args():
     return args
 
 
-def qseq_to_fastq (qseq_file, fastq_file):
-    
-    
+def qseq_to_fastq(qseq_file, fastq_file):
+    """
+    convert qseq file to fastq file
+    """
     try:
         with open(qseq_file) as f:
-
-            qseq_list = []      #list into which the qseq file will be read, and from which the fastq file will be built
+            # list into which the qseq file will be read, 
+            # and from which the fastq file will be built
+            qseq_list = []
             sep = ":"
-    
-            for line in f:  #loop that populates qseq_list
+            
+            #loop that populates qseq_list
+            for line in f:  
                 fields = line.split()
-                if len(fields) != 11:   #excludes entries that aren't in qseq format from the output without stopping the whole program
+                
+                # excludes entries that aren't in qseq 
+                # format 
+                if len(fields) != 11:  
                     continue
                 if fields[10] == '0':   #excludes sequences that didn't meet quality standards
                     continue
@@ -50,7 +56,6 @@ def main():
     """
 
     args = get_args()
-    print(args)
     qseq_to_fastq(args.input_file, args.output_file)
 
 if __name__ == '__main__':
