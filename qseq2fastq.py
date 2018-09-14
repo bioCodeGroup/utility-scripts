@@ -9,9 +9,9 @@ def get_args():
     """
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('-f', '--input-file', nargs="+",
+    parser.add_argument('-f', '--input-file',
                         metavar='QSEQFILES', help='qseq files')
-    parser.add_argument('-o', '--output-file', nargs="+",
+    parser.add_argument('-o', '--output-file',
                         metavar='FASTQFILES', help='fastq filenames')
 
     args = parser.parse_args()
@@ -23,17 +23,15 @@ def qseq_to_fastq(qseq_file, fastq_file):
     """
     convert qseq file to fastq file
     """
+    # list into which the qseq file will be read, 
+    # and from which the fastq file will be built
+    qseq_list = []
+    sep = ":"
     try:
         with open(qseq_file) as f:
-            # list into which the qseq file will be read, 
-            # and from which the fastq file will be built
-            qseq_list = []
-            sep = ":"
-            
             #loop that populates qseq_list
             for line in f:  
                 fields = line.split()
-                
                 # excludes entries that aren't in qseq 
                 # format 
                 if len(fields) != 11:  
@@ -46,7 +44,7 @@ def qseq_to_fastq(qseq_file, fastq_file):
     
     with open(fastq_file, 'w') as output:
         for item in qseq_list:
-            output.writelines('@'+sep.join(item[:8]+'\n'+item[8]+'\n+\n'+item[9]+'\n')
+            output.writelines('@'+sep.join(item[:8])+'\n'+item[8]+'\n+\n'+item[9]+'\n')
 
 def main():
     """
