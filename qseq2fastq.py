@@ -18,24 +18,13 @@ def get_args():
 
     return args
 
-## To do:
 
-f = open("sampleqseq2.txt","r")
-lib = {}
-sep = ":"
-for line in f:
-    a = line.split()
-    headers = "@" + sep.join(a[0:8])
-    seq = a[8]
-    qual = a[9]
-    filtering = a[21].strip()
-    #print(headers)
-    #print (seq)
-    #print(qual)
-    #print (filtering)
-## add function to filter out bad entries
-##
 def qseq_to_fastq (input_file, output_file):
+    
+    with open(qseq_file) as f:
+        # do stuff with f 
+    
+    
     try:
         input = open(input_file)
     except:
@@ -50,6 +39,21 @@ def qseq_to_fastq (input_file, output_file):
             continue
         qseq_list = qseq_list + [fields]
 
+    f = open(args.input_file,"r")
+    lib = {}
+    sep = ":"
+    for line in f:
+        a = line.split()
+        headers = "@" + sep.join(a[0:8])
+        seq = a[8]
+        qual = a[9]
+        filtering = a[21].strip()
+    #print(headers)
+    #print (seq)
+    #print(qual)
+    #print (filtering)
+## add function to filter out bad entries
+##
 def main():
     """
     Main routine
@@ -58,6 +62,8 @@ def main():
     """
 
     args = get_args()
+    print(args)
+    qseq_to_fastq(args.input_file, args.output_file)
 
 if __name__ == '__main__':
     main()
