@@ -19,41 +19,29 @@ def get_args():
     return args
 
 
-def qseq_to_fastq (input_file, output_file):
-    
-    with open(qseq_file) as f:
-        # do stuff with f 
+def qseq_to_fastq (qseq_file, fastq_file):
     
     
     try:
-        input = open(input_file)
+        with open(qseq_file) as f:
+
+            qseq_list = []      #list into which the qseq file will be read, and from which the fastq file will be built
+            sep = ":"
+    
+            for line in f:  #loop that populates qseq_list
+                fields = line.split()
+                if len(fields) != 11:   #excludes entries that aren't in qseq format from the output without stopping the whole program
+                    continue
+                if fields[10] == '0':   #excludes sequences that didn't meet quality standards
+                    continue
+                qseq_list = qseq_list + [fields]
     except:
         return 'Unable to open input file'
-    output = open(output_file, 'w')
-    qseq_list = []      #list into which the qseq file will be read, and from which the fastq file will be built
-    for line in input:  #loop that populates qseq_list
-        fields = line.split()
-        if len(fields) != 11:   #excludes entries that aren't in qseq format from the output without stopping the whole program
-            continue
-        if fields[10] == '0':   #excludes sequences that didn't meet quality standards
-            continue
-        qseq_list = qseq_list + [fields]
+    
+    with open(fastq_file, 'w') as output:
+        for item in qseq_list:
+            output.writelines('@'+sep.join(item[:8]+'\n'+item[8]+'\n+\n'+item[9]+'\n')
 
-    f = open(args.input_file,"r")
-    lib = {}
-    sep = ":"
-    for line in f:
-        a = line.split()
-        headers = "@" + sep.join(a[0:8])
-        seq = a[8]
-        qual = a[9]
-        filtering = a[21].strip()
-    #print(headers)
-    #print (seq)
-    #print(qual)
-    #print (filtering)
-## add function to filter out bad entries
-##
 def main():
     """
     Main routine
