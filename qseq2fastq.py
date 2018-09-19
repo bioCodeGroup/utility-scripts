@@ -18,26 +18,25 @@ def get_args():
 
     return args
 
-
 def qseq_to_fastq(qseq_file, fastq_file):
     """
     convert qseq file to fastq file
     """
-    # list into which the qseq file will be read, 
+    # list into which the qseq file will be read,
     # and from which the fastq file will be built
     qseq_list = []
     try:
         with open(qseq_file) as f:
             #loop that populates qseq_list
-            for line in f:  
+            for line in f:
                 fields = line.split()
-                # excludes entries that aren't in qseq 
+                # excludes entries that aren't in qseq
                 # format that didn't meet quality standards
-                if len(fields) == 11 and fields[10] == '1':  
+                if len(fields) == 11 and fields[10] == '1':
                     qseq_list = qseq_list + [fields]
     except:
         return 'Unable to open input file'
-    
+
     with open(fastq_file, 'w') as output:
         for item in qseq_list:
             output.writelines('@'+":".join(item[:8])+'\n'+item[8]+'\n+\n'+item[9]+'\n')
