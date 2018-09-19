@@ -1,5 +1,7 @@
 #!/usr/bin/env python
-
+"""
+This code imports a qseq file and exports a fastq file
+"""
 from __future__ import absolute_import
 import argparse
 
