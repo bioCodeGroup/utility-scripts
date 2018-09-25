@@ -49,16 +49,21 @@ def qseq_to_fastq(qseq_file, fastq_file, metadata_file):
                     qseq_list = qseq_list + [fields]
                     pass_count += 1
                 else:
-                    fail_count +=1
-    except:
-        return 'Unable to open input file'
+                    fail_count += 1
+    except IOError:
+        print('Unable to open input file')
 
     with open(fastq_file, 'w') as output:
         for item in qseq_list:
             output.writelines('@'+":".join(item[:8])+'\n'+item[8]+'\n+\n'+item[9]+'\n')
 
     with open(metadata_file, 'w') as mdat:
-            mdat.writelines('Input qseq file: ' + str(qseq_file) + '\n' + 'Output fastq file: ' + str(fastq_file) + '\n' + 'Number of lines passing Quality Control: ' + str(pass_count) + '\n' + 'Number of lines failing Quality Control or not proper qseq file lines: ' + str(fail_count))
+            mdat.writelines(['Input qseq file: ' , str(qseq_file),
+                            '\n' , 'Output fastq file: ' , str(fastq_file),
+                            '\n' , 'Number of lines passing Quality Control: ',
+                            str(pass_count), '\n',
+                            'Number of lines failing Quality Control or not proper qseq file lines: ',
+                            str(fail_count)])
 
 def main():
     """

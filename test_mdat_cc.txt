@@ -1,0 +1,4 @@
+Input qseq file: testdata/qseq_test.txt
+Output fastq file: test_cc.txt
+Number of lines passing Quality Control: 182
+Number of lines failing Quality Control or not proper qseq file lines: 18
