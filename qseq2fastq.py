@@ -20,10 +20,17 @@ def get_args():
 
     return args
 
+def isfloat(value):
+    try:
+        float(value)
+        return True
+    except ValueError:
+        return False
+
 def qseq_to_fastq(qseq_file, fastq_file):
     """
     convert qseq file to fastq file
-    """
+    """ 
     # list into which the qseq file will be read,
     # and from which the fastq file will be built
     qseq_list = []
@@ -34,7 +41,10 @@ def qseq_to_fastq(qseq_file, fastq_file):
                 fields = line.split()
                 # excludes entries that aren't in qseq
                 # format that didn't meet quality standards
-                if len(fields) == 11 and fields[10] == '1':
+                sequence = fields[8]
+                n_sequence = sequence.replace(".", "N")
+                fields[8] = n_sequence
+                if len(fields) == 11 and fields[10] == '1' and len(fields[8]) == len(fields[9]) and isfloat(fields[4]) == True and isfloat(fields[5]) == True:
                     qseq_list = qseq_list + [fields]
     except:
         return 'Unable to open input file'
