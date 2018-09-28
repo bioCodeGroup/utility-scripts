@@ -23,9 +23,6 @@ def get_args():
 
     return args
 
-<<<<<<< metadata-file-create
-def qseq_to_fastq(qseq_file, fastq_file, metadata_file):
-=======
 def isfloat(value):
     try:
         float(value)
@@ -33,8 +30,7 @@ def isfloat(value):
     except ValueError:
         return False
 
-def qseq_to_fastq(qseq_file, fastq_file):
->>>>>>> master
+def qseq_to_fastq(qseq_file, fastq_file, metadata_file):
     """
     convert qseq file to fastq file
     """ 
