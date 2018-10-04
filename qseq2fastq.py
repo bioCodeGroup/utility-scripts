@@ -35,7 +35,7 @@ def isfloat(value):
 def qseq_to_fastq(qseq_file, fastq_file, metadata_file, discard_file):
     """
     convert qseq file to fastq file
-    """ 
+    """
     # list into which the qseq file will be read,
     # and from which the fastq file will be built
     # Also, pass_count and fail_count count the
@@ -59,8 +59,9 @@ def qseq_to_fastq(qseq_file, fastq_file, metadata_file, discard_file):
                 n_sequence = sequence.replace(".", "N")
                 fields[8] = n_sequence
                 if len(fields) == 11 and fields[10] == '1' and len(fields[8]) == len(fields[9]) and isfloat(fields[4]) == True and isfloat(fields[5]) == True:
-                    qseq_list = qseq_list + [fields]
-                    pass_count += 1
+                    if 'A' or 'T' or 'C' or 'G' in fields[8]:
+                        qseq_list = qseq_list + [fields]
+                        pass_count += 1
                 else:
                     fail_list = fail_list + [fields]
                     fail_count += 1
