@@ -17,6 +17,8 @@ def get_args():
                         metavar='FASTQFILES', help='fastq filenames')
     parser.add_argument('-m', '--metadata-file',
                         metavar='METADATAFILES', help='metadata filenames')
+    parser.add_argument('-d', '--discard-file',
+                        metavar='DISCARDFILE', help='file containing sequences discarded by QC')
 
 
     args = parser.parse_args()
@@ -30,7 +32,7 @@ def isfloat(value):
     except ValueError:
         return False
 
-def qseq_to_fastq(qseq_file, fastq_file, metadata_file):
+def qseq_to_fastq(qseq_file, fastq_file, metadata_file, discard_file):
     """
     convert qseq file to fastq file
     """ 
@@ -42,6 +44,7 @@ def qseq_to_fastq(qseq_file, fastq_file, metadata_file):
     # the line is actually part of the qseq file
 
     qseq_list = []
+    fail_list = []
     pass_count = 0
     fail_count = 0
 
@@ -59,6 +62,7 @@ def qseq_to_fastq(qseq_file, fastq_file, metadata_file):
                     qseq_list = qseq_list + [fields]
                     pass_count += 1
                 else:
+                    fail_list = fail_list + [fields]
                     fail_count += 1
     except IOError:
         print('Unable to open input file')
@@ -74,6 +78,10 @@ def qseq_to_fastq(qseq_file, fastq_file, metadata_file):
                             str(pass_count), '\n',
                             'Number of lines failing Quality Control or not proper qseq file lines: ',
                             str(fail_count)])
+    
+    with open(discard_file, 'w') as disc:
+        for item in fail_list:
+            disc.writelines('@'+":".join(item[:8])+'\n'+item[8]+'\n+\n'+item[9]+'\n')
 
 def main():
     """
@@ -83,7 +91,7 @@ def main():
     """
 
     args = get_args()
-    qseq_to_fastq(args.input_file, args.output_file, args.metadata_file)
+    qseq_to_fastq(args.input_file, args.output_file, args.metadata_file, args.discard_file)
 
 if __name__ == '__main__':
     main()
