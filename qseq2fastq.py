@@ -32,6 +32,13 @@ def isfloat(value):
     except ValueError:
         return False
 
+
+def isdna(maybeseq):
+    if 'A' in maybeseq or 'C' in maybeseq or 'T' in maybeseq or 'G' in maybeseq:
+        return True
+    else:
+        return False
+
 def qseq_to_fastq(qseq_file, fastq_file, metadata_file, discard_file):
     """
     convert qseq file to fastq file
@@ -58,10 +65,10 @@ def qseq_to_fastq(qseq_file, fastq_file, metadata_file, discard_file):
                 sequence = fields[8]
                 n_sequence = sequence.replace(".", "N")
                 fields[8] = n_sequence
-                if len(fields) == 11 and fields[10] == '1' and len(fields[8]) == len(fields[9]) and isfloat(fields[4]) == True and isfloat(fields[5]) == True:
-                    if 'A' or 'T' or 'C' or 'G' in fields[8]:
-                        qseq_list = qseq_list + [fields]
-                        pass_count += 1
+                # dnaverify = isdna(n_sequence)
+                if len(fields) == 11 and fields[10] == '1' and len(fields[8]) == len(fields[9]) and isfloat(fields[4]) == True and isfloat(fields[5]) == True and isdna(fields[8]) == True:
+                    qseq_list = qseq_list + [fields]
+                    pass_count += 1
                 else:
                     fail_list = fail_list + [fields]
                     fail_count += 1
@@ -79,7 +86,7 @@ def qseq_to_fastq(qseq_file, fastq_file, metadata_file, discard_file):
                             str(pass_count), '\n',
                             'Number of lines failing Quality Control or not proper qseq file lines: ',
                             str(fail_count)])
-    
+
     with open(discard_file, 'w') as disc:
         for item in fail_list:
             disc.writelines('@'+":".join(item[:8])+'\n'+item[8]+'\n+\n'+item[9]+'\n')
