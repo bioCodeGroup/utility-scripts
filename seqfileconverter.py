@@ -1,11 +1,11 @@
-!/usr/bin/env python
+#!/usr/bin/env python
 """
 This code imports a file, determines its type, and exports it
 into the user specified file type.
 """
 from __future__ import absolute_import
 import argparse
-
+import QCvalidate as val
 def get_args():
     """
     Get input arguments
@@ -53,7 +53,7 @@ def get_args():
                     n_sequence = sequence.replace(".", "N")
                     fields[8] = n_sequence
                     # dnaverify = isdna(n_sequence)
-                    if len(fields) == 11 and fields[10] == '1' and len(fields[8]) == len(fields[9]) and isfloat(fields[4]) == True and isfloat(fields[5]) == True and isdna(fields[8]) == True:
+                    if len(fields) == 11 and fields[10] == '1' and len(fields[8]) == len(fields[9]) and val.isfloat(fields[4]) == True and val.isfloat(fields[5]) == True and val.isdna(fields[8]) == True:
                         qseq_list = qseq_list + [fields]
                         pass_count += 1
                     else:
