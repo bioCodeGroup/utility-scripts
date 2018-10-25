@@ -48,7 +48,7 @@ def fastq_to_qseq(fastq_file, qseq_file, metadata_file, discard_file):
     try:
         #take info from all lines passing qc
         with open(fastq_file) as f:
-            #loop that populates qseq_list
+            #loop that populates qseq_list with passing reads
             for line in f:
                 if ":" in line:
                     fields = line.split(":")
@@ -56,12 +56,16 @@ def fastq_to_qseq(fastq_file, qseq_file, metadata_file, discard_file):
                     seq = list(islice(f, 2))[-1]
                     qual = list(islice(f, 3))[-1]
                     a += line.strip()+ '\t' + seq.strip() + qual.strip() + '\t1\n'
+                    pass_count += 1
+                    #print(a)
+                if pass_count == 0:
+                    print("Unable to convert qseq input file")
+        f.close()
 
-                    count += 1
 
         #take info from all lines failing qc
         with open(discard_file) as f:
-            #loop that populates qseq_list
+            #loop that populates qseq_list with failed reads
             for line in f:
                 if ":" in line:
                     fields = line.split(":")
@@ -69,14 +73,23 @@ def fastq_to_qseq(fastq_file, qseq_file, metadata_file, discard_file):
                     seq = list(islice(f, 2))[-1]
                     qual = list(islice(f, 3))[-1]
                     a += line.strip()+ '\t' + seq.strip() + qual.strip() + '\t0\n'
-                    count += 1
+                    fail_count += 1
+                if fail_count == 0:
+                    print("Unable to convert discard file")
+        f.close()
 
-#print statements just for development
-        print(a)
-        print (count)
     except IOError:
         print('Unable to open input file')
 
+    with open(qseq_file, 'w') as output:
+        for item in a:
+            output.writelines(a)
+
+    with open(metadata_file, 'w') as mdat:
+            mdat.writelines(['Input qseq file: ' , str(fastq_file),
+                            '\n' , 'Output fastq file: ' , str(qseq_file),
+                            '\n' , 'Number of lines passing Quality Control: ',
+                            str(pass_count)])
 
 
 

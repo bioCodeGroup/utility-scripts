@@ -49,13 +49,18 @@ def fastq_to_qseq(fastq_file, qseq_file, metadata_file, discard_file):
             #loop that populates qseq_list
             for line in file:
                 if ":" in line:
-                    headerinfo = line
+                    stuff = str(line)
+                    next(f)
+                    line.append(stuff)
+                    next(f)
+                    next(f)
+                    line.append()
                     sequence = next(f)
                     qseq_list = qseq_list + [header + /t + sequence]
-
                     print (line)
                 fields = line.split(":")
                 next()
+        file.close()
 
 
 
