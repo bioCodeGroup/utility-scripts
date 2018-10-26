@@ -37,44 +37,46 @@ def fastq_to_qseq(fastq_file, qseq_file, metadata_file, discard_file):
     # the line is actually part of the qseq file
 
     qseq_list = []
-    #fail_list = []
     pass_count = 0
     fail_count = 0
     count = 0
 
     try:
         #take info from all lines passing qc
-        with open(discard_file) as f:
-            #if ':' in line:
-            #loop that populates qseq_list with passing reads
-            header = f.readline()
-            print(header.strip())
-            seq = f.readline()
-            #print(seq.strip())
-            f.readline()
-            qual = f.readline()
-            #print(qual.strip())
-            qseq_list += [header.replace(':','\t')]
-            pass_count += 1
-        if pass_count == 0:
-            print("Unable to convert any lines in qseq input file")
-        print(len(qseq_list))
+        with open(fastq_file) as f:
+            while True:
+                header = f.readline()
+                seq = f.readline()
+                com = f.readline()
+                qual = f.readline()
+                qseq_list += [header.replace(':','\t') + '\t' + seq + '\t' + qual + '\t1' + '\n']
+                pass_count += 1
+                if not qual:
+                    break
+    except IOError:
+        print('Unable to open input file')
 
         #take info from all lines failing qc
         #with open(discard_file) as f:
             #loop that populates qseq_list with failed reads
-            #for line in f:
-                #if ":" in line:
-                    #fields = line.split(":")
-                    #line = line.replace(':','\t')
-                    #seq = list(islice(f, 2))[-1]
-                    #qual = list(islice(f, 3))[-1]
-                    #qseq_list += [line.strip()+ '\t' + seq.strip() + qual.strip() + '\t0\n']
+
                     #fail_count += 1
                 #if fail_count == 0:
                     #print("Unable to convert any lines in discard file")
-        #f.close()
-        #print(qseq_list)
+
+    try:
+        #take info from all lines passing qc
+        with open(discard_file) as f:
+            while True:
+                header = f.readline()
+                seq = f.readline()
+                com = f.readline()
+                qual = f.readline()
+                qseq_list += [header.replace(':','\t') + '\t' + seq + '\t' + qual + '\t0' + '\n']
+                fail_count += 1
+                if not qual:
+                    break
+        print (qseq_list)
     except IOError:
         print('Unable to open input file')
 
