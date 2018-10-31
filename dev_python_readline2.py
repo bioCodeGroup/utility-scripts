@@ -4,6 +4,7 @@ This code imports a fastq file and exports a qseq file
 """
 from __future__ import absolute_import
 import argparse
+import QCvalidate as val
 
 def get_args():
     """
@@ -46,10 +47,17 @@ def fastq_to_qseq(fastq_file, qseq_file, metadata_file, discard_file):
         with open(fastq_file) as f:
             while True:
                 header = f.readline().strip()
+                #if len(fields) == 11 and fields[10] == '1' and len(fields[8]) == len(fields[9]) and val.isfloat(fields[4]) == True and val.isfloat(fields[5]) == True and val.isdna(fields[8]) == True:
                 seq = f.readline().strip()
                 com = f.readline().strip()
                 qual = f.readline().strip()
-                qseq_list += [header.replace(':','\t') + '\t' + seq + '\t' + qual + '\t1' + '\n']
+                qc = str(header.split(':'))
+                if len(seq) == len(qual):
+                    for fields in str(header.split(':')):
+                        if len(fields) == 11 and fields[10] == '1' and val.isfloat(fields[4]) == True and val.isfloat(fields[5]) == True:
+                            qseq_list += [header.replace(':','\t') + '\t' + seq + '\t' + qual + '\t1' + '\n']
+
+                qseq_list += [header + '\t' + seq + '\t' + qual + '\t1' + '\n']
                 pass_count += 1
                 if not qual:
                     break
