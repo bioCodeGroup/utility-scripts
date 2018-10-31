@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 """
-This code imports a qseq file and exports a fastq file
+This code imports a fastq file and exports a qseq file
 """
 from __future__ import absolute_import
 import argparse
@@ -45,10 +45,10 @@ def fastq_to_qseq(fastq_file, qseq_file, metadata_file, discard_file):
         #take info from all lines passing qc
         with open(fastq_file) as f:
             while True:
-                header = f.readline()
-                seq = f.readline()
-                com = f.readline()
-                qual = f.readline()
+                header = f.readline().strip()
+                seq = f.readline().strip()
+                com = f.readline().strip()
+                qual = f.readline().strip()
                 qseq_list += [header.replace(':','\t') + '\t' + seq + '\t' + qual + '\t1' + '\n']
                 pass_count += 1
                 if not qual:
@@ -68,21 +68,21 @@ def fastq_to_qseq(fastq_file, qseq_file, metadata_file, discard_file):
         #take info from all lines passing qc
         with open(discard_file) as f:
             while True:
-                header = f.readline()
-                seq = f.readline()
-                com = f.readline()
-                qual = f.readline()
+                header = f.readline().strip()
+                seq = f.readline().strip()
+                com = f.readline().strip()
+                qual = f.readline().strip()
                 qseq_list += [header.replace(':','\t') + '\t' + seq + '\t' + qual + '\t0' + '\n']
                 fail_count += 1
                 if not qual:
                     break
-        print (qseq_list)
+        #print (qseq_list)
     except IOError:
         print('Unable to open input file')
 
-    #with open(qseq_file, 'w') as output:
-        #for item in qseq_list:
-            #output.writelines(item)
+    with open(qseq_file, 'w') as output:
+        for item in qseq_list:
+            output.writelines(item)
 
     with open(metadata_file, 'w') as mdat:
             mdat.writelines(['Input qseq file: ' , str(fastq_file),
