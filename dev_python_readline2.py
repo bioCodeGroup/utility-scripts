@@ -6,6 +6,7 @@ from __future__ import absolute_import
 import argparse
 import QCvalidate as val
 
+
 def get_args():
     """
     Get input arguments
@@ -46,16 +47,17 @@ def fastq_to_qseq(fastq_file, qseq_file, metadata_file, discard_file):
         #take info from all lines passing qc
         with open(fastq_file) as f:
             while True:
-                header = f.readline().strip()
+                header = f.readline().strip().split(':')
                 #if len(fields) == 11 and fields[10] == '1' and len(fields[8]) == len(fields[9]) and val.isfloat(fields[4]) == True and val.isfloat(fields[5]) == True and val.isdna(fields[8]) == True:
                 seq = f.readline().strip()
                 com = f.readline().strip()
                 qual = f.readline().strip()
-                if len(seq) == len(qual):
-                    qseq_list += [header[1:].replace(':','\t') + '\t' + seq + '\t' + qual + '\t1' + '\n']
-                    pass_count += 1
                 if not qual:
                     break
+                if len(seq) == len(qual) and val.isfloat(header[4]) == True and val.isfloat(header[5]) == True and val.isdna(seq) == True:
+                    qseq_list += '\t'.join([header[0][1:], '\t'.join(header[1:]), seq, qual, '1\n'])
+                    pass_count += 1
+
     except IOError:
         print('Unable to open input file')
 
@@ -71,17 +73,16 @@ def fastq_to_qseq(fastq_file, qseq_file, metadata_file, discard_file):
         #take info from all lines passing qc
         with open(discard_file) as f:
             while True:
-                header = f.readline().strip()
+                header = f.readline().strip().split(':')
                 seq = f.readline().strip()
                 com = f.readline().strip()
                 qual = f.readline().strip()
-                if len(seq) == len(qual):
-                    qseq_list += [header[1:].replace(':','\t') + '\t' + seq + '\t' + qual + '\t1' + '\n']
-                    fail_count += 1
-
                 if not qual:
                     break
-        #print (qseq_list)
+                if len(seq) == len(qual) and val.isfloat(header[4]) == True and val.isfloat(header[5]) == True and val.isdna(seq) == True:
+                    qseq_list += '\t'.join([header[0][1:], '\t'.join(header[1:]), seq, qual, '0\n'])
+                    fail_count += 1
+
     except IOError:
         print('Unable to open input file')
 
