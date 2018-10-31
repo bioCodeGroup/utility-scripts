@@ -51,14 +51,9 @@ def fastq_to_qseq(fastq_file, qseq_file, metadata_file, discard_file):
                 seq = f.readline().strip()
                 com = f.readline().strip()
                 qual = f.readline().strip()
-                qc = str(header.split(':'))
                 if len(seq) == len(qual):
-                    for fields in str(header.split(':')):
-                        if len(fields) == 11 and fields[10] == '1' and val.isfloat(fields[4]) == True and val.isfloat(fields[5]) == True:
-                            qseq_list += [header.replace(':','\t') + '\t' + seq + '\t' + qual + '\t1' + '\n']
-
-                qseq_list += [header + '\t' + seq + '\t' + qual + '\t1' + '\n']
-                pass_count += 1
+                    qseq_list += [header[1:].replace(':','\t') + '\t' + seq + '\t' + qual + '\t1' + '\n']
+                    pass_count += 1
                 if not qual:
                     break
     except IOError:
@@ -80,8 +75,10 @@ def fastq_to_qseq(fastq_file, qseq_file, metadata_file, discard_file):
                 seq = f.readline().strip()
                 com = f.readline().strip()
                 qual = f.readline().strip()
-                qseq_list += [header.replace(':','\t') + '\t' + seq + '\t' + qual + '\t0' + '\n']
-                fail_count += 1
+                if len(seq) == len(qual):
+                    qseq_list += [header[1:].replace(':','\t') + '\t' + seq + '\t' + qual + '\t1' + '\n']
+                    fail_count += 1
+
                 if not qual:
                     break
         #print (qseq_list)
