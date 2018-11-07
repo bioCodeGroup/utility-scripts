@@ -66,23 +66,23 @@ def fastq_to_qseq(fastq_file, qseq_file, metadata_file, discard_file):
     except IOError:
         print('Unable to open input file')
 
-    try:
+    #try:
         #take info from all lines passing qc
-        with open(discard_file) as f:
-            while True:
-                header = f.readline().strip().split(':')
-                seq = f.readline().strip()
-                com = f.readline().strip()
-                qual = f.readline().strip()
-                if not qual:
-                    break
+        #with open(discard_file) as f:
+            #while True:
+                #header = f.readline().strip().split(':')
+                #seq = f.readline().strip()
+                #com = f.readline().strip()
+                #qual = f.readline().strip()
+                #if not qual:
+                    #break
                 # Create lines of qseq formatted files
-                if len(seq) == len(qual) and val.isfloat(header[4]) == True and val.isfloat(header[5]) == True and val.isdna(seq) == True:
-                    qseq_list += '\t'.join([header[0][1:], '\t'.join(header[1:]), seq, qual, '0\n'])
-                    fail_count += 1
+                #if len(seq) == len(qual) and val.isfloat(header[4]) == True and val.isfloat(header[5]) == True and val.isdna(seq) == True:
+                    #qseq_list += '\t'.join([header[0][1:], '\t'.join(header[1:]), seq, qual, '0\n'])
+                    #fail_count += 1
 
-    except IOError:
-        print('Unable to open input file')
+    #except IOError:
+        #print('Unable to open input file')
 
     # Write the output to output_file
     with open(qseq_file, 'w') as output:

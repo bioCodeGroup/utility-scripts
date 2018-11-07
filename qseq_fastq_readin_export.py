@@ -12,14 +12,20 @@ def get_args():
 
     parser = argparse.ArgumentParser()
     parser.add_argument('-f', '--input-file',
-                        metavar='QSEQFILES', help='qseq files')
+                        metavar='INPUT FILES', help='fastq, qseq, or SAM file')
+    parser.add_argument('-o', '--output-file',
+                        metavar='OUTPUT FILES', help='fastq filenames')
+    parser.add_argument('-m', '--metadata-file',
+                        metavar='METADATAFILES', help='metadata filenames')
+    parser.add_argument('-d', '--discard-file',
+                        metavar='DISCARDFILE', help='file containing sequences discarded by QC')
 
 
     args = parser.parse_args()
     return args
 
 
-def qseq_readin(qseq_file):
+def qseq_readin(input_file):
     """
     read in a qseq file and turn important features into variables in a list
     """
@@ -47,7 +53,7 @@ def qseq_readin(qseq_file):
                 fields[8] = n_sequence
                 # dnaverify = isdna(n_sequence)
                 if len(fields) == 11 and fields[10] == '1' and len(fields[8]) == len(fields[9]) and isfloat(fields[4]) == True and isfloat(fields[5]) == True and isdna(fields[8]) == True:
-                    pass_list = qseq_list + [fields]
+                    pass_list = pass_list + [fields]
                     pass_count += 1
                 else:
                     fail_list = fail_list + [fields]
@@ -74,11 +80,11 @@ def fastq_readin(fastq_file):
     pass_list = []
     pass_count = 0
     fail_count = 0
-    count = 0
+
 
     try:
         #take info from all lines passing qc
-        with open(fastq_file) as f:
+        with open(input_file) as f:
             while True:
                 header = f.readline().strip().split(':')
                 seq = f.readline().strip()
@@ -90,27 +96,50 @@ def fastq_readin(fastq_file):
                 if len(seq) == len(qual) and val.isfloat(header[4]) == True and val.isfloat(header[5]) == True and val.isdna(seq) == True:
                     pass_list += '\t'.join([header[0][1:], '\t'.join(header[1:]), seq, qual, '1\n'])
                     pass_count += 1
-
     except IOError:
         print('Unable to open input file')
 
-    try:
-        #take info from all lines passing qc
-        with open(discard_file) as f:
-            while True:
-                header = f.readline().strip().split(':')
-                seq = f.readline().strip()
-                com = f.readline().strip()
-                qual = f.readline().strip()
-                if not qual:
-                    break
-                # Create lines of qseq formatted files
-                if len(seq) == len(qual) and val.isfloat(header[4]) == True and val.isfloat(header[5]) == True and val.isdna(seq) == True:
-                    fail_list += '\t'.join([header[0][1:], '\t'.join(header[1:]), seq, qual, '0\n'])
-                    fail_count += 1
 
-    except IOError:
-        print('Unable to open input file')
+
+
+
+
+# Write to the qseq export file
+def qseq_export():
+    with open(export_file, 'w') as output:
+        for item in pass_list:
+            output.writelines(item)
+
+
+# Write to the fastq export file
+def fastq_export():
+    with open(output_file, 'w') as output:
+        for item in pass_list:
+            output.writelines('@'+":".join(item[:8])+'\n'+item[8]+'\n+\n'+item[9]+'\n')
+
+
+# Write the metadata to metadata_file
+def mdat_export():
+    with open(metadata_file, 'w') as mdat:
+            mdat.writelines(['Input qseq file: ' , str(input_file),
+                            '\n' , 'Output fastq file: ' , str(export_file),
+                            '\n' , 'Number of lines passing Quality Control: ',
+                            str(pass_count), '\n',
+                            'Number of lines failing Quality Control or not proper qseq file lines: ',
+                            str(fail_count)])
+
+
+# Write to the discard export file
+def discard_export():
+    with open(discard_file, 'w') as disc:
+        for item in fail_list:
+            disc.writelines('@'+":".join(item[:8])+'\n'+item[8]+'\n+\n'+item[9]+'\n')
+
+
+
+
+qseq_readin(qseq_file)
+
 
 
 def main():
