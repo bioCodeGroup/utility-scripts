@@ -4,6 +4,8 @@ This code imports a qseq file and exports a fastq file
 """
 from __future__ import absolute_import
 import argparse
+import QCvalidate as val
+
 
 def get_args():
     """
@@ -42,7 +44,7 @@ def qseq_readin(input_file):
     fail_count = 0
 
     try:
-        with open(qseq_file) as f:
+        with open(input_file) as f:
             #loop that populates qseq_list
             for line in f:
                 fields = line.split()
@@ -52,7 +54,7 @@ def qseq_readin(input_file):
                 n_sequence = sequence.replace(".", "N")
                 fields[8] = n_sequence
                 # dnaverify = isdna(n_sequence)
-                if len(fields) == 11 and fields[10] == '1' and len(fields[8]) == len(fields[9]) and isfloat(fields[4]) == True and isfloat(fields[5]) == True and isdna(fields[8]) == True:
+                if len(fields) == 11 and fields[10] == '1' and len(fields[8]) == len(fields[9]) and val.isfloat(fields[4]) == True and val.isfloat(fields[5]) == True and val.isdna(fields[8]) == True:
                     pass_list = pass_list + [fields]
                     pass_count += 1
                 else:
@@ -61,7 +63,9 @@ def qseq_readin(input_file):
     except IOError:
         print('Unable to open input file')
 
-def fastq_readin(fastq_file):
+    return pass_list, pass_count, fail_list, fail_count
+
+def fastq_readin(input_file):
     """
     convert fastq file to qseq file
     """
@@ -78,9 +82,9 @@ def fastq_readin(fastq_file):
     # Lastly, this code creates a metadata file.
 
     pass_list = []
+    #fail_list=[] unnecessary because all the fastq files are all passing QC
     pass_count = 0
     fail_count = 0
-
 
     try:
         #take info from all lines passing qc
@@ -105,24 +109,24 @@ def fastq_readin(fastq_file):
 
 
 # Write to the qseq export file
-def qseq_export():
-    with open(export_file, 'w') as output:
+def qseq_export(output_file, pass_list):
+    with open(output_file, 'w') as output:
         for item in pass_list:
             output.writelines(item)
 
 
 # Write to the fastq export file
-def fastq_export():
+def fastq_export(output_file, pass_list):
     with open(output_file, 'w') as output:
         for item in pass_list:
             output.writelines('@'+":".join(item[:8])+'\n'+item[8]+'\n+\n'+item[9]+'\n')
 
 
 # Write the metadata to metadata_file
-def mdat_export():
+def mdat_export(metadata_file, input_file, output_file, pass_count, fail_count):
     with open(metadata_file, 'w') as mdat:
             mdat.writelines(['Input qseq file: ' , str(input_file),
-                            '\n' , 'Output fastq file: ' , str(export_file),
+                            '\n' , 'Output fastq file: ' , str(output_file),
                             '\n' , 'Number of lines passing Quality Control: ',
                             str(pass_count), '\n',
                             'Number of lines failing Quality Control or not proper qseq file lines: ',
@@ -130,7 +134,7 @@ def mdat_export():
 
 
 # Write to the discard export file
-def discard_export():
+def discard_export(discard_file, fail_list):
     with open(discard_file, 'w') as disc:
         for item in fail_list:
             disc.writelines('@'+":".join(item[:8])+'\n'+item[8]+'\n+\n'+item[9]+'\n')
@@ -138,7 +142,9 @@ def discard_export():
 
 
 
-qseq_readin(qseq_file)
+#qseq_readin(args.input_file)
+#fastq_export(output_file, pass_count)
+
 
 
 
@@ -150,7 +156,13 @@ def main():
     """
 
     args = get_args()
-    qseq_to_fastq(args.input_file, args.output_file, args.metadata_file, args.discard_file)
+    #fastq_readin(args.input_file)
+
+    pass_list, pass_count, fail_list, fail_count = qseq_readin(args.input_file)
+
+    fastq_export(args.output_file, pass_list)
+
+    #qseq_to_fastq(args.input_file, args.output_file, args.metadata_file, args.discard_file)
 
 if __name__ == '__main__':
     main()
