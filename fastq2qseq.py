@@ -46,7 +46,7 @@ def fastq_to_qseq(fastq_file, qseq_file, metadata_file, discard_file):
     qseq_list = []
     pass_count = 0
     fail_count = 0
-    count = 0
+
 
     try:
         #take info from all lines passing qc
