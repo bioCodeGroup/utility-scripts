@@ -1,0 +1,4 @@
+Input qseq file: testdata/fastq.txt
+Output fastq file: a.txt
+Number of lines extracted from fastq file: 182
+Number of lines extracted from discard file: 10
