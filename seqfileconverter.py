@@ -25,7 +25,6 @@ def get_args():
     args = parser.parse_args()
     return args
 
-
 def qseq_to_fastq(qseq_file, fastq_file, metadata_file, discard_file):
     """
     convert qseq file to fastq file
@@ -79,6 +78,7 @@ def qseq_to_fastq(qseq_file, fastq_file, metadata_file, discard_file):
             disc.writelines('@'+":".join(item[:8])+'\n'+item[8]+'\n+\n'+item[9]+'\n')
 
 
+
 def fastq_to_qseq(fastq_file, qseq_file, metadata_file, discard_file):
     """
     convert fastq file to qseq file
@@ -118,8 +118,6 @@ def fastq_to_qseq(fastq_file, qseq_file, metadata_file, discard_file):
     except IOError:
         print('Unable to open input file')
 
-
-
     # Write the output to output_file
     with open(qseq_file, 'w') as output:
         for item in qseq_list:
@@ -133,14 +131,56 @@ def fastq_to_qseq(fastq_file, qseq_file, metadata_file, discard_file):
                             str(pass_count),
                             '\n' , 'Number of lines extracted from discard file: ',
                             str(fail_count)])
+        
+def sam2fastq(sam_file, fastq_file):
+    """
+    convert a sam file to a fastq file
+    """
+    #list into which the sam file will be read and from which the fastq file will be built
+    sam_list = []
+    try:
+        #loop that populates sam_list
+        with open(sam_file) as sam:
+            for line in sam:
+                sam_fields = line.split()
+                #excludes header lines (which start with '@' in sam files)
+                if '@' not in sam_fields[0]:
+                    sam_list += [sam_fields]
+    except IOError:
+        print('Unable to open input file')
+    with open(fastq_file, 'w') as fq:
+        for entry in sam_list:
+            #writes fastq file using the first column of the sam file as
+            #the first line of the fastq file
+            fq.writelines('@'+entry[0]+'\n'+entry[9]+'\n+\n'+entry[10]+'\n')       
 
-    #def sam2fastq
+def fastq_to_sam(fastq_file, sam_file):
+    """
+    convert fastq file to sam file
+    """
+    #list into which the fastq file will be read 
+    #and from which the sam file will be written
+    sam_list = []
+    try:
+        #loop that populates sam_list
+        with open(fastq_file) as f:
+            while True:
+                header = f.readline().strip()
+                seq = f.readline().strip()
+                com = f.readline().strip()
+                qual = f.readline().strip()
+                if not qual:
+                    break
+                # Create lines in sam format
+                sam_list += [header[1:], '\t', '4', '\t', '*', '\t', '0', '\t', '0', '\t', '*', '\t', '*', '\t', '0', '\t', '0', '\t', seq, '\t', qual, '\n']
+    except IOError:
+        print('Unable to open input file')
+    # Write the output to output_file
+    with open(sam_file, 'w') as output:
+        for item in sam_list:
+            output.writelines(item)
 
-    #def fastq2sam
-
-    #def whichfileisit
-
-
+#def whichfileisit
 
 def main():
     """
@@ -150,9 +190,9 @@ def main():
     """
 
     args = get_args()
-    #qseq_to_fastq(args.input_file, args.output_file, args.metadata_file, args.discard_file)
-    fastq_to_qseq(args.input_file, args.output_file, args.metadata_file, args.discard_file)
-
-
+    qseq_to_fastq(args.input_file, args.output_file, args.metadata_file, args.discard_file)
+    #fastq_to_qseq(args.input_file, args.output_file, args.metadata_file, args.discard_file)
+    #sam2fastq(args.input_file, args.output_file)
+    #fastq_to_sam(args.input_file, args.output_file)
 if __name__ == '__main__':
     main()
