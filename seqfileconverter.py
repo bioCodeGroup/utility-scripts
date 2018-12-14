@@ -20,6 +20,8 @@ def get_args():
                         metavar='METADATAFILES', help='metadata filenames')
     parser.add_argument('-d', '--discard-file',
                         metavar='DISCARDFILE', help='file containing sequences discarded by QC')
+    parser.add_argument('-t', '--file-type',
+                        metavar='FILETYPE', help='type of input and output files qf=qseq2fastq fq=fastq2qseq sf=sam2fastq fs=fastq2qseq')
 
 
     args = parser.parse_args()
@@ -131,7 +133,7 @@ def fastq_to_qseq(fastq_file, qseq_file, metadata_file, discard_file):
                             str(pass_count),
                             '\n' , 'Number of lines extracted from discard file: ',
                             str(fail_count)])
-        
+
 def sam2fastq(sam_file, fastq_file):
     """
     convert a sam file to a fastq file
@@ -152,13 +154,13 @@ def sam2fastq(sam_file, fastq_file):
         for entry in sam_list:
             #writes fastq file using the first column of the sam file as
             #the first line of the fastq file
-            fq.writelines('@'+entry[0]+'\n'+entry[9]+'\n+\n'+entry[10]+'\n')       
+            fq.writelines('@'+entry[0]+'\n'+entry[9]+'\n+\n'+entry[10]+'\n')
 
 def fastq_to_sam(fastq_file, sam_file):
     """
     convert fastq file to sam file
     """
-    #list into which the fastq file will be read 
+    #list into which the fastq file will be read
     #and from which the sam file will be written
     sam_list = []
     try:
@@ -186,13 +188,19 @@ def main():
     """
     Main routine
 
-    Convert qseq file to fastq file
+    Convert input file to specified output file type
     """
 
     args = get_args()
-    qseq_to_fastq(args.input_file, args.output_file, args.metadata_file, args.discard_file)
-    #fastq_to_qseq(args.input_file, args.output_file, args.metadata_file, args.discard_file)
-    #sam2fastq(args.input_file, args.output_file)
-    #fastq_to_sam(args.input_file, args.output_file)
+    if args.file_type == 'qf':
+        qseq_to_fastq(args.input_file, args.output_file, args.metadata_file, args.discard_file)
+    elif args.file_type == 'fq':
+        fastq_to_qseq(args.input_file, args.output_file, args.metadata_file, args.discard_file)
+    elif args.file_type == 'sf':
+        sam2fastq(args.input_file, args.output_file)
+    elif args.file_type == 'fs':
+        fastq_to_sam(args.input_file, args.output_file)
+    else:
+        print('Your file type input does not match existing types, try again using qf, fq, sf, or fs. ')
 if __name__ == '__main__':
     main()
