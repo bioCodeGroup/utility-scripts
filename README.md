@@ -29,9 +29,9 @@ Tests have not yet been created for this repository.
 
 ### Usage
 
-To run file converter:
+To run sequencing file converter:
 ```
-python <command here> 
+python seqfileconverter -f <input file> -o <output file> -d <discard file> -m <metadata file> -t <file type> 
 ```
 
 ## Contributing
