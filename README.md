@@ -11,6 +11,8 @@ and using Python to solve problems or automate tasks.
 
 ## Getting Started
 
+Sequencing File Conveter allows the user to swap the format of their nucleic acid sequencing file (allowed file types: .qseq, .fastq, or .sam). Please refer to the seqfileconverter usage diagram to view the current supported swaps. 
+
 ### Prerequisites
 
 Utility scripts are written in Python3.
@@ -39,7 +41,7 @@ python seqfileconverter -f <input file> -o <output file> -d <discard file> -m <m
 This is a beginner, educational repository for students learning Python or R to contribute to. We are a small group of students at CSU studying biology and learning code through hands-on activities, please contact a member through the webpage to ask about joining before you contribute to this repository. 
 
 ### Proposed ideas: 
-* qSeq-FastQ converter
+* qSeq to/from SAM file converter (can be added as a module to seqfileconverter)
 * demultiplex libraries
 
 ## Authors
