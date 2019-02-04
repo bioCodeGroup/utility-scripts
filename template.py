@@ -21,9 +21,9 @@ def my_function(input_file, output_file):
     """ A sample function """
     
     print("This is my input file: %s" % input_file)
-    print("\nThis is my output file: %s" output_file)
+    print("\nThis is my output file: %s" % output_file)
 
-def main()
+def main():
     """ The main routine to run """
 
     # Get the parameters
